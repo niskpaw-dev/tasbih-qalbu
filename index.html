@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Jom Zikir & Selawat</title>
+    
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#f0f4f8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/11441/11441383.png">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/11441/11441383.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Amiri:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <style>
+        :root{--accent-color:#38a169;--selawat-color:#3182ce;--bg-color:#f0f4f8;--card-bg:#fff;--text-main:#2d3748;--text-muted:#718096;--box-bg:#f8fafc;--border-color:#edf2f7;--toggle-bg:#cbd5e0}
+        [data-theme="dark"]{--bg-color:#1a202c;--card-bg:#2d3748;--text-main:#f7fafc;--text-muted:#a0aec0;--box-bg:#374151;--border-color:#4a5568;--toggle-bg:#4a5568}
+        body{font-family:'Inter',sans-serif;background:var(--bg-color);color:var(--text-main);display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;padding:20px;transition:.4s;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+        .card{background:var(--card-bg);padding:30px 20px;border-radius:35px;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);max-width:400px;width:100%;text-align:center;position:relative}
+        .flex-between{display:flex;justify-content:space-between;align-items:center}
+        .theme-switch{display:inline-block;height:24px;position:relative;width:45px}
+        .theme-switch input{display:none}
+        .slider{background-color:var(--toggle-bg);bottom:0;cursor:pointer;left:0;position:absolute;right:0;top:0;transition:.4s;border-radius:34px;padding:0 5px}
+        .slider:before{background-color:#fff;bottom:3px;content:"";height:18px;left:3px;position:absolute;transition:.4s;width:18px;border-radius:50%;z-index:2}
+        input:checked+.slider{background-color:var(--accent-color)} input:checked+.slider:before{transform:translateX(21px)}
+        .tabs{display:flex;background:var(--bg-color);border-radius:15px;padding:5px;margin-bottom:20px;border:1px solid var(--border-color)}
+        .tab-btn{flex:1;padding:12px;border:none;background:0 0;font-weight:800;cursor:pointer;border-radius:12px;color:var(--text-muted);font-size:.85rem;transition:.3s}
+        .tab-btn.active{background:var(--card-bg);box-shadow:0 4px 10px rgba(0,0,0,.1)}
+        .tab-btn.active.zikir-tab{color:var(--accent-color)} .tab-btn.active.selawat-tab{color:var(--selawat-color)}
+        .zikir-box{background:var(--box-bg);border:1px solid var(--border-color);padding:25px 20px;border-radius:25px;margin-bottom:15px;min-height:160px;display:flex;flex-direction:column;justify-content:center}
+        .arabic{font-family:'Amiri',serif;font-size:2.1rem;line-height:1.8;direction:rtl;color:var(--text-main)}
+        .tasbih-section{background:var(--bg-color);padding:20px;border-radius:25px;margin-bottom:20px;transition:.4s}
+        .counter-display{font-size:4.5rem;font-weight:800;margin:0;letter-spacing:-2px;transition:.1s;display:inline-block}
+        .pop-zikir{transform:scale(1.15);color:var(--accent-color)} .pop-selawat{transform:scale(1.15);color:var(--selawat-color)}
+        .target-box{font-size:.8rem;color:var(--text-muted);margin-bottom:8px;font-weight:600;gap:8px;justify-content:center;display:flex}
+        .btn-tukar,.btn-reset{background:var(--card-bg);border:1px solid var(--border-color);padding:4px 12px;border-radius:20px;font-size:.7rem;font-weight:700;cursor:pointer;transition:.2s}
+        .btn-tukar{color:var(--text-main)} .btn-tukar:hover{background:var(--border-color)}
+        .btn-reset{color:#e53e3e} .btn-reset:hover{border-color:#e53e3e;background:rgba(229,62,62,.1)}
+        .progress-container{width:100%;background:var(--border-color);border-radius:10px;height:8px;margin:15px 0;overflow:hidden}
+        .progress-bar{height:100%;width:0%;transition:width .4s ease}
+        .zikir-mode .progress-bar{background:var(--accent-color)} .selawat-mode .progress-bar{background:var(--selawat-color)}
+        .tap-area{border:none;width:110px;height:110px;border-radius:50%;cursor:pointer;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;-webkit-tap-highlight-color:transparent;transition:.1s;color:#fff;touch-action:manipulation}
+        .zikir-mode .tap-area{background:var(--accent-color);box-shadow:0 10px 20px rgba(56,161,105,.4)}
+        .selawat-mode .tap-area{background:var(--selawat-color);box-shadow:0 10px 20px rgba(49,130,206,.4)}
+        .tap-area:active{transform:scale(.9)}
+        .history-section{padding:15px;background:var(--box-bg);border-radius:20px;border:1px solid var(--border-color)}
+        .chart-container{display:flex;justify-content:space-around;align-items:flex-end;height:50px}
+        .bar{width:12%;border-radius:4px;transition:.5s;min-height:2px}
+        .zikir-mode .bar{background:var(--accent-color);opacity:.4} .selawat-mode .bar{background:var(--selawat-color);opacity:.4}
+        .bar.today{opacity:1}
+        .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:1000;visibility:hidden;opacity:0;transition:.3s;backdrop-filter:blur(4px)}
+        .modal-overlay.show{visibility:visible;opacity:1}
+        .modal-content{background:var(--card-bg);padding:30px;border-radius:30px;width:85%;max-width:320px;text-align:center;transform:scale(.8);transition:.3s}
+        .modal-overlay.show .modal-content{transform:scale(1)}
+        .modal-btn{background:var(--accent-color);color:#fff;border:none;padding:12px 20px;border-radius:15px;font-weight:700;width:100%;margin-top:15px;cursor:pointer}
+        .modal-input{width:100%;padding:15px;margin:15px 0;border-radius:12px;border:2px solid var(--border-color);background:var(--bg-color);color:var(--text-main);font-size:1.5rem;font-weight:800;text-align:center;box-sizing:border-box;outline:none;transition:.2s}
+        .modal-input:focus{border-color:var(--accent-color)}
+        .hidden{display:none}
+    </style>
+</head>
+<body data-theme="light">
+<div class="card">
+    <div class="flex-between" style="margin-bottom:10px">
+        <div id="greeting-text" style="color:var(--accent-color);font-weight:800;font-size:.7rem;letter-spacing:1px;text-transform:uppercase">...</div>
+        <label class="theme-switch">
+            <input type="checkbox" id="checkbox" onclick="toggleTheme()">
+            <div class="slider flex-between"><span style="font-size:10px">🌙</span><span style="font-size:10px">☀️</span></div>
+        </label>
+    </div>
+    <h1 style="margin:0;font-weight:800;font-size:1.8rem;letter-spacing:-1px">Zikir & Selawat</h1>
+    <div id="current-date" style="color:var(--text-muted);font-size:.85rem;margin-bottom:15px"></div>
+
+<div class="tabs">
+        <button class="tab-btn active zikir-tab" onclick="switchMode('zikir')">ZIKIR</button>
+        <button class="tab-btn selawat-tab" onclick="switchMode('selawat')">SELAWAT</button>
+    </div>
+
+<div id="zikir-content" class="zikir-box">
+        <span id="label-hari" style="color:var(--accent-color);font-weight:800;font-size:.7rem;margin-bottom:8px">...</span>
+        <div id="zikir-display" class="arabic">...</div>
+        <div id="zikir-maksud" style="font-size:.85rem;color:var(--text-muted);font-style:italic;margin-top:10px;line-height:1.4">...</div>
+    </div>
+
+<div id="selawat-content" class="zikir-box hidden">
+        <span style="color:var(--selawat-color);font-weight:800;font-size:.7rem;margin-bottom:8px">SELAWAT NABI</span>
+        <div class="arabic">اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ</div>
+        <div style="font-size:.85rem;color:var(--text-muted);font-style:italic;margin-top:10px">"Ya Allah, berilah selawat ke atas Nabi Muhammad dan keluarganya."</div>
+    </div>
+
+<div class="tasbih-section zikir-mode" id="tasbih-area">
+        <div class="target-box">
+            <span>Target: <span id="target-val" style="color:var(--text-main)">0</span></span>
+            <button class="btn-tukar" onclick="action('set')">Tukar</button>
+            <button class="btn-reset" onclick="action('reset')">Reset</button>
+        </div>
+        <div class="counter-display" id="counter">0</div>
+        <div class="progress-container"><div class="progress-bar" id="pb"></div></div>
+        <button class="tap-area" onclick="action('inc')">
+            <img src="https://cdn-icons-png.flaticon.com/512/11441/11441383.png" style="width:28px;filter:brightness(0) invert(1);">
+            <span style="font-size:.75rem;font-weight:800">TEKAN</span>
+        </button>
+    </div>
+
+<div class="history-section">
+        <div id="hist-title" style="font-size:.65rem;font-weight:800;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">PRESTASI ZIKIR (7 HARI)</div>
+        <div class="chart-container" id="history-chart"></div>
+    </div>
+    <div style="margin-top:25px;font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;font-weight:700">Developed by Niskala Pawaka</div>
+</div>
+
+<div class="modal-overlay" id="successModal">
+    <div class="modal-content">
+        <span class="modal-icon" style="font-size:2rem;">🎉</span>
+        <h2 style="margin:0;font-size:1.5rem">Alhamdulillah!</h2>
+        <p id="modal-msg" style="color:var(--text-muted);font-size:.9rem;margin:10px 0">Sasaran tercapai.</p>
+        <button class="modal-btn" onclick="action('boost')">Tambah Target +100</button>
+        <button onclick="$('successModal').classList.remove('show')" style="background:0 0;border:none;margin-top:15px;color:var(--text-muted);cursor:pointer;font-size:.8rem;text-decoration:underline">Tutup</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="targetModal">
+    <div class="modal-content">
+        <h2 style="margin:0;font-size:1.3rem">Set Sasaran</h2>
+        <p style="color:var(--text-muted);font-size:.8rem;margin:5px 0 0">Masukkan sasaran baru anda:</p>
+        <input type="number" id="new-target-input" inputmode="numeric" pattern="[0-9]*" class="modal-input">
+        <button class="modal-btn" onclick="action('saveTarget')" id="btn-save-target">Simpan</button>
+        <button onclick="$('targetModal').classList.remove('show')" style="background:0 0;border:none;margin-top:15px;color:var(--text-muted);cursor:pointer;font-size:.8rem;text-decoration:underline">Batal</button>
+    </div>
+</div>
+
+<script>
+    const $ = id => document.getElementById(id);
+    const zData = [
+        { h:"Ahad", t:"يَا حَيُّ يَا قَيُّوْمُ", m:"Wahai Tuhan Yang Maha Hidup, Yang Maha Berdiri Sendiri." },
+        { h:"Isnin", t:"لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ الْعَلِيِّ الْعَظِيْمِ", m:"Tiada daya dan kekuatan melainkan dengan pertolongan Allah." },
+        { h:"Selasa", t:"اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ", m:"Ya Allah, berilah selawat ke atas Nabi Muhammad dan keluarganya." },
+        { h:"Rabu", t:"أَسْتَغْفِرُ اللهَ الْعَظِيْمَ", m:"Aku memohon ampun kepada Allah Yang Maha Agung." },
+        { h:"Khamis", t:"سُبْحَانَ اللهِ وَبِحَمْدِهِ سُبْحَانَ اللهِ الْعَظِيْمِ", m:"Maha Suci Allah dengan segala puji bagi-Nya." },
+        { h:"Jumaat", t:"يَا اللهُ", m:"Wahai Allah." },
+        { h:"Sabtu", t:"لَا إِلَهَ إِلَّا اللهُ", m:"Tiada Tuhan yang berhak disembah melainkan Allah." }
+    ];
+
+    let mode = 'zikir';
+    const now = new Date(), dtStr = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const todayKey = dtStr(now);
+    let hist = JSON.parse(localStorage.getItem('kariah_v6_history')) || {};
+    if (!hist[todayKey]) hist[todayKey] = { zikir:0, selawat:0, targetZikir:1000, targetSelawat:1000, celebratedZ:false, celebratedS:false };
+
+    const K = { zikir: {c:'zikir', t:'targetZikir', cel:'celebratedZ', col:'--accent-color', lbl:'ZIKIR'}, selawat: {c:'selawat', t:'targetSelawat', cel:'celebratedS', col:'--selawat-color', lbl:'SELAWAT'} };
+
+    function switchMode(m) {
+        mode = m;
+        $('zikir-content').classList.toggle('hidden', m !== 'zikir');
+        $('selawat-content').classList.toggle('hidden', m === 'zikir');
+        $('tasbih-area').className = `tasbih-section ${m}-mode`;
+        document.querySelector('.zikir-tab').classList.toggle('active', m === 'zikir');
+        document.querySelector('.selawat-tab').classList.toggle('active', m === 'selawat');
+        
+        let color = `var(${K[m].col})`;
+        document.querySelectorAll('.modal-btn').forEach(btn => btn.style.background = color);
+        $('new-target-input').style.borderColor = color; 
+        
+        $('hist-title').innerText = `PRESTASI ${K[m].lbl} (7 HARI)`;
+        updateUI();
+    }
+
+    function updateUI() {
+        let d = hist[todayKey], mk = K[mode];
+        $('counter').innerText = d[mk.c];
+        $('target-val').innerText = d[mk.t];
+        $('pb').style.width = Math.min((d[mk.c] / d[mk.t]) * 100, 100) + "%";
+        
+        let chartHTML = '';
+        for (let i=6; i>=0; i--) {
+            let dt = new Date(); dt.setDate(dt.getDate() - i);
+            let ds = dtStr(dt), v = hist[ds]?.[mk.c] || 0, tg = hist[ds]?.[mk.t] || 1000;
+            chartHTML += `<div style="display:flex;flex-direction:column;align-items:center;width:12%;"><div class="bar ${ds===todayKey?'today':''}" style="height:${Math.min((v/tg)*50, 50)}px"></div><div style="font-size:.6rem;color:var(--text-muted);margin-top:4px;font-weight:700">${['A','I','S','R','K','J','S'][dt.getDay()]}</div></div>`;
+        }
+        $('history-chart').innerHTML = chartHTML;
+    }
+
+    function action(act) {
+        let d = hist[todayKey], mk = K[mode];
+        if (act === 'inc') {
+            d[mk.c]++;
+            $('counter').classList.add(`pop-${mode}`);
+            setTimeout(() => $('counter').classList.remove(`pop-${mode}`), 100);
+            if(navigator.vibrate) navigator.vibrate(60);
+            if (d[mk.c] >= d[mk.t] && !d[mk.cel]) {
+                if(navigator.vibrate) navigator.vibrate(500);
+                confetti({ particleCount:200, spread:90, origin:{y:.6}, colors:[mode==='zikir'?'#38a169':'#3182ce','#fff','#ffd700'] });
+                $('modal-msg').innerText = `Alhamdulillah! Sasaran ${d[mk.t]} kali ${mode} hari ini tercapai.`;
+                $('successModal').classList.add('show');
+                d[mk.cel] = true;
+            }
+        } else if (act === 'boost') {
+            d[mk.t] += 100; d[mk.cel] = false; $('successModal').classList.remove('show');
+        } else if (act === 'reset' && confirm(`Pasti mahu reset kiraan ${mode} kepada 0?`)) {
+            d[mk.c] = 0; d[mk.cel] = false;
+        } else if (act === 'set') {
+            $('new-target-input').value = d[mk.t];
+            $('targetModal').classList.add('show');
+            setTimeout(() => $('new-target-input').focus(), 100);
+            return; 
+        } else if (act === 'saveTarget') {
+            let n = $('new-target-input').value;
+            if (n && !isNaN(n) && n > 0) { 
+                d[mk.t] = parseInt(n); d[mk.cel] = false; 
+                $('targetModal').classList.remove('show');
+            } else { alert("Sila masukkan nombor sah (>0)."); return; }
+        }
+        localStorage.setItem('kariah_v6_history', JSON.stringify(hist));
+        updateUI();
+    }
+
+    function toggleTheme() {
+        let isD = $('checkbox').checked;
+        document.body.setAttribute('data-theme', isD ? 'dark' : 'light');
+        localStorage.setItem('theme', isD ? 'dark' : 'light');
+        updateMetaTheme();
+    }
+
+    function updateMetaTheme() {
+        const themeColor = document.querySelector('meta[name="theme-color"]');
+        if (document.body.getAttribute('data-theme') === 'dark') {
+            themeColor.setAttribute('content', '#1a202c');
+        } else {
+            themeColor.setAttribute('content', '#f0f4f8');
+        }
+    }
+
+    if(localStorage.getItem('theme') === 'dark') { 
+        document.body.setAttribute('data-theme', 'dark'); 
+        $('checkbox').checked = true; 
+        updateMetaTheme();
+    }
+    
+    let info = zData[now.getDay()], h = now.getHours();
+    $('label-hari').innerText = "HARI " + info.h.toUpperCase();
+    $('zikir-display').innerText = info.t;
+    $('zikir-maksud').innerText = info.m;
+    $('current-date').innerText = now.toLocaleDateString('ms-MY', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+    $('greeting-text').innerText = h<12 ? "Selamat Pagi" : h<17 ? "Selamat Tengahari" : h<20 ? "Selamat Petang" : "Selamat Malam";
+    updateUI();
+
+    // --- Pendaftaran Service Worker PWA ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Zikir PWA Service Worker Aktif!', reg.scope))
+                .catch(err => console.error('Pendaftaran SW Gagal:', err));
+        });
+    }
+</script>
+</body>
+</html>
