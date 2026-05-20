@@ -1,258 +1,1454 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Jom Zikir & Selawat</title>
-    
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#f0f4f8">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#065f46" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#022c22" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Zikir">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Tasbih digital — zikir, selawat, reminder harian">
+<title>Jom Zikir & Selawat</title>
 
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/11441/11441383.png">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/11441/11441383.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Amiri:wght@700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <style>
-        :root{--accent-color:#38a169;--selawat-color:#3182ce;--bg-color:#f0f4f8;--card-bg:#fff;--text-main:#2d3748;--text-muted:#718096;--box-bg:#f8fafc;--border-color:#edf2f7;--toggle-bg:#cbd5e0}
-        [data-theme="dark"]{--bg-color:#1a202c;--card-bg:#2d3748;--text-main:#f7fafc;--text-muted:#a0aec0;--box-bg:#374151;--border-color:#4a5568;--toggle-bg:#4a5568}
-        body{font-family:'Inter',sans-serif;background:var(--bg-color);color:var(--text-main);display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;padding:20px;transition:.4s;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
-        .card{background:var(--card-bg);padding:30px 20px;border-radius:35px;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);max-width:400px;width:100%;text-align:center;position:relative}
-        .flex-between{display:flex;justify-content:space-between;align-items:center}
-        .theme-switch{display:inline-block;height:24px;position:relative;width:45px}
-        .theme-switch input{display:none}
-        .slider{background-color:var(--toggle-bg);bottom:0;cursor:pointer;left:0;position:absolute;right:0;top:0;transition:.4s;border-radius:34px;padding:0 5px}
-        .slider:before{background-color:#fff;bottom:3px;content:"";height:18px;left:3px;position:absolute;transition:.4s;width:18px;border-radius:50%;z-index:2}
-        input:checked+.slider{background-color:var(--accent-color)} input:checked+.slider:before{transform:translateX(21px)}
-        .tabs{display:flex;background:var(--bg-color);border-radius:15px;padding:5px;margin-bottom:20px;border:1px solid var(--border-color)}
-        .tab-btn{flex:1;padding:12px;border:none;background:0 0;font-weight:800;cursor:pointer;border-radius:12px;color:var(--text-muted);font-size:.85rem;transition:.3s}
-        .tab-btn.active{background:var(--card-bg);box-shadow:0 4px 10px rgba(0,0,0,.1)}
-        .tab-btn.active.zikir-tab{color:var(--accent-color)} .tab-btn.active.selawat-tab{color:var(--selawat-color)}
-        .zikir-box{background:var(--box-bg);border:1px solid var(--border-color);padding:25px 20px;border-radius:25px;margin-bottom:15px;min-height:160px;display:flex;flex-direction:column;justify-content:center}
-        .arabic{font-family:'Amiri',serif;font-size:2.1rem;line-height:1.8;direction:rtl;color:var(--text-main)}
-        .tasbih-section{background:var(--bg-color);padding:20px;border-radius:25px;margin-bottom:20px;transition:.4s}
-        .counter-display{font-size:4.5rem;font-weight:800;margin:0;letter-spacing:-2px;transition:.1s;display:inline-block}
-        .pop-zikir{transform:scale(1.15);color:var(--accent-color)} .pop-selawat{transform:scale(1.15);color:var(--selawat-color)}
-        .target-box{font-size:.8rem;color:var(--text-muted);margin-bottom:8px;font-weight:600;gap:8px;justify-content:center;display:flex}
-        .btn-tukar,.btn-reset{background:var(--card-bg);border:1px solid var(--border-color);padding:4px 12px;border-radius:20px;font-size:.7rem;font-weight:700;cursor:pointer;transition:.2s}
-        .btn-tukar{color:var(--text-main)} .btn-tukar:hover{background:var(--border-color)}
-        .btn-reset{color:#e53e3e} .btn-reset:hover{border-color:#e53e3e;background:rgba(229,62,62,.1)}
-        .progress-container{width:100%;background:var(--border-color);border-radius:10px;height:8px;margin:15px 0;overflow:hidden}
-        .progress-bar{height:100%;width:0%;transition:width .4s ease}
-        .zikir-mode .progress-bar{background:var(--accent-color)} .selawat-mode .progress-bar{background:var(--selawat-color)}
-        .tap-area{border:none;width:110px;height:110px;border-radius:50%;cursor:pointer;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;-webkit-tap-highlight-color:transparent;transition:.1s;color:#fff;touch-action:manipulation}
-        .zikir-mode .tap-area{background:var(--accent-color);box-shadow:0 10px 20px rgba(56,161,105,.4)}
-        .selawat-mode .tap-area{background:var(--selawat-color);box-shadow:0 10px 20px rgba(49,130,206,.4)}
-        .tap-area:active{transform:scale(.9)}
-        .history-section{padding:15px;background:var(--box-bg);border-radius:20px;border:1px solid var(--border-color)}
-        .chart-container{display:flex;justify-content:space-around;align-items:flex-end;height:50px}
-        .bar{width:12%;border-radius:4px;transition:.5s;min-height:2px}
-        .zikir-mode .bar{background:var(--accent-color);opacity:.4} .selawat-mode .bar{background:var(--selawat-color);opacity:.4}
-        .bar.today{opacity:1}
-        .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:1000;visibility:hidden;opacity:0;transition:.3s;backdrop-filter:blur(4px)}
-        .modal-overlay.show{visibility:visible;opacity:1}
-        .modal-content{background:var(--card-bg);padding:30px;border-radius:30px;width:85%;max-width:320px;text-align:center;transform:scale(.8);transition:.3s}
-        .modal-overlay.show .modal-content{transform:scale(1)}
-        .modal-btn{background:var(--accent-color);color:#fff;border:none;padding:12px 20px;border-radius:15px;font-weight:700;width:100%;margin-top:15px;cursor:pointer}
-        .modal-input{width:100%;padding:15px;margin:15px 0;border-radius:12px;border:2px solid var(--border-color);background:var(--bg-color);color:var(--text-main);font-size:1.5rem;font-weight:800;text-align:center;box-sizing:border-box;outline:none;transition:.2s}
-        .modal-input:focus{border-color:var(--accent-color)}
-        .hidden{display:none}
-    </style>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22110%22 fill=%22%23065f46%22/><g fill=%22none%22 stroke=%22%23c9a227%22 stroke-width=%2214%22 stroke-linecap=%22round%22><circle cx=%22256%22 cy=%22180%22 r=%2242%22 fill=%22%23c9a227%22/><circle cx=%22170%22 cy=%22260%22 r=%2230%22/><circle cx=%22342%22 cy=%22260%22 r=%2230%22/><circle cx=%22200%22 cy=%22340%22 r=%2226%22/><circle cx=%22312%22 cy=%22340%22 r=%2226%22/><circle cx=%22256%22 cy=%22400%22 r=%2234%22 fill=%22%23c9a227%22/><path d=%22M256 222 L200 314 M256 222 L312 314 M200 366 L256 434 M312 366 L256 434 M170 290 L200 314 M342 290 L312 314%22/></g></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22110%22 fill=%22%23065f46%22/><g fill=%22none%22 stroke=%22%23c9a227%22 stroke-width=%2214%22 stroke-linecap=%22round%22><circle cx=%22256%22 cy=%22180%22 r=%2242%22 fill=%22%23c9a227%22/><circle cx=%22170%22 cy=%22260%22 r=%2230%22/><circle cx=%22342%22 cy=%22260%22 r=%2230%22/><circle cx=%22200%22 cy=%22340%22 r=%2226%22/><circle cx=%22312%22 cy=%22340%22 r=%2226%22/><circle cx=%22256%22 cy=%22400%22 r=%2234%22 fill=%22%23c9a227%22/><path d=%22M256 222 L200 314 M256 222 L312 314 M200 366 L256 434 M312 366 L256 434 M170 290 L200 314 M342 290 L312 314%22/></g></svg>">
+<link rel="manifest" href='data:application/manifest+json;charset=utf-8,{"name":"Jom Zikir %26 Selawat","short_name":"Zikir","description":"Tasbih digital","start_url":".","display":"standalone","orientation":"portrait","background_color":"%23065f46","theme_color":"%23065f46","icons":[{"src":"data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22110%22 fill=%22%23065f46%22/><g fill=%22none%22 stroke=%22%23c9a227%22 stroke-width=%2214%22 stroke-linecap=%22round%22><circle cx=%22256%22 cy=%22180%22 r=%2242%22 fill=%22%23c9a227%22/><circle cx=%22170%22 cy=%22260%22 r=%2230%22/><circle cx=%22342%22 cy=%22260%22 r=%2230%22/><circle cx=%22200%22 cy=%22340%22 r=%2226%22/><circle cx=%22312%22 cy=%22340%22 r=%2226%22/><circle cx=%22256%22 cy=%22400%22 r=%2234%22 fill=%22%23c9a227%22/><path d=%22M256 222 L200 314 M256 222 L312 314 M200 366 L256 434 M312 366 L256 434 M170 290 L200 314 M342 290 L312 314%22/></g></svg>","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]}'>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Amiri:wght@400;700&family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Amiri:wght@400;700&family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet"></noscript>
+<script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js" onerror="window._noConfetti=true"></script>
+
+<style>
+:root{
+  --accent:#065f46; --accent-soft:#059669; --accent-glow:rgba(6,95,70,.35);
+  --selawat:#1e40af; --selawat-soft:#3b82f6; --selawat-glow:rgba(30,64,175,.35);
+  --gold:#c9a227; --gold-soft:#eab308;
+  --bg:#f5f1e8; --card:#fffefb; --ink:#1c2a2a; --muted:#6b7a78;
+  --box:#faf6ec; --line:#e7dfd0; --toggle:#d4c9b3;
+  --danger:#b91c1c;
+  --shadow-sm:0 1px 2px rgba(28,42,42,.06);
+  --shadow-md:0 8px 24px -8px rgba(28,42,42,.15);
+  --shadow-lg:0 24px 48px -12px rgba(28,42,42,.25);
+  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+[data-theme="dark"]{
+  --accent:#10b981; --accent-soft:#34d399; --accent-glow:rgba(16,185,129,.4);
+  --selawat:#60a5fa; --selawat-soft:#93c5fd; --selawat-glow:rgba(96,165,250,.4);
+  --gold:#eab308; --gold-soft:#fbbf24;
+  --bg:#0a1612; --card:#132421; --ink:#f0ebe0; --muted:#8b9995;
+  --box:#0f1d1a; --line:#1f3330; --toggle:#334441;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.3);
+  --shadow-md:0 8px 24px -8px rgba(0,0,0,.5);
+  --shadow-lg:0 24px 48px -12px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{overscroll-behavior-y:none}
+body{
+  font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg); color:var(--ink); margin:0;
+  min-height:100vh; min-height:100dvh;
+  padding:calc(var(--safe-t) + 16px) 16px calc(var(--safe-b) + 16px);
+  display:flex; justify-content:center; align-items:flex-start;
+  transition:background .4s,color .4s;
+  background-image:
+    radial-gradient(circle at 10% 20%, var(--accent-glow) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, var(--selawat-glow) 0%, transparent 40%);
+  background-attachment:fixed;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'><g fill='none' stroke='%23065f46' stroke-width='.5' opacity='.08'><path d='M30 0 L60 30 L30 60 L0 30 Z'/><circle cx='30' cy='30' r='15'/></g></svg>");
+  background-size:60px 60px;
+}
+[data-theme="dark"] body::before{filter:invert(1) brightness(1.2)}
+
+.card{
+  background:var(--card); border-radius:28px;
+  padding:24px 20px; max-width:440px; width:100%;
+  box-shadow:var(--shadow-lg);
+  position:relative; z-index:1;
+  border:1px solid var(--line);
+}
+
+/* Header */
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.greeting{
+  font-family:'Fraunces',serif; font-style:italic; font-weight:400;
+  color:var(--accent); font-size:.78rem;
+  letter-spacing:.02em;
+}
+.streak-pill{
+  display:inline-flex; align-items:center; gap:4px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-soft));
+  color:#fff; padding:3px 10px; border-radius:20px;
+  font-size:.7rem; font-weight:700;
+  box-shadow:0 2px 8px rgba(201,162,39,.3);
+}
+.theme-switch{position:relative;width:44px;height:24px;flex-shrink:0}
+.theme-switch input{opacity:0;width:0;height:0}
+.slider{
+  position:absolute;inset:0;background:var(--toggle);
+  border-radius:24px;cursor:pointer;transition:.3s;
+}
+.slider::before{
+  content:"";position:absolute;height:18px;width:18px;
+  left:3px;top:3px;background:var(--card);
+  border-radius:50%;transition:.3s;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:var(--shadow-sm);
+}
+input:checked+.slider{background:var(--accent)}
+input:checked+.slider::before{transform:translateX(20px)}
+
+/* Title */
+.title{
+  font-family:'Fraunces',serif; font-weight:600;
+  font-size:1.9rem; margin:8px 0 2px;
+  letter-spacing:-.02em; line-height:1.1;
+}
+.subtitle{color:var(--muted);font-size:.8rem;margin-bottom:18px}
+
+/* Stats row */
+.stats-row{
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;
+  margin-bottom:18px;
+}
+.stat{
+  background:var(--box); border:1px solid var(--line);
+  border-radius:16px; padding:10px 8px; text-align:center;
+}
+.stat-label{font-size:.58rem;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.stat-val{font-family:'Fraunces',serif;font-weight:600;font-size:1.3rem;margin-top:2px;font-variant-numeric:tabular-nums}
+.stat-val.accent{color:var(--accent)}
+.stat-val.gold{color:var(--gold)}
+
+/* Tabs */
+.tabs{
+  display:flex; background:var(--box); border:1px solid var(--line);
+  border-radius:14px; padding:4px; margin-bottom:16px;
+}
+.tab-btn{
+  flex:1; padding:10px; border:none; background:transparent;
+  font-weight:700; font-size:.8rem; cursor:pointer;
+  border-radius:10px; color:var(--muted);
+  transition:.25s; font-family:inherit;
+  letter-spacing:.04em;
+}
+.tab-btn.active{background:var(--card); box-shadow:var(--shadow-sm)}
+.tab-btn.active[data-mode="zikir"]{color:var(--accent)}
+.tab-btn.active[data-mode="selawat"]{color:var(--selawat)}
+
+/* Zikir display */
+.zikir-box{
+  background:var(--box); border:1px solid var(--line);
+  border-radius:22px; padding:22px 18px; margin-bottom:14px;
+  min-height:160px; display:flex; flex-direction:column;
+  justify-content:center; text-align:center;
+  position:relative; overflow:hidden;
+}
+.zikir-box::after{
+  content:"";position:absolute;top:8px;right:8px;width:40px;height:40px;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c9a227' stroke-width='1'><path d='M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z'/></svg>");
+  background-size:contain; opacity:.4;
+}
+.zikir-label{
+  color:var(--accent); font-weight:700; font-size:.65rem;
+  letter-spacing:.15em; text-transform:uppercase; margin-bottom:10px;
+}
+.zikir-label.selawat-label{color:var(--selawat)}
+.arabic{
+  font-family:'Amiri',serif; font-size:2rem; line-height:1.9;
+  direction:rtl; color:var(--ink); font-weight:400;
+}
+.maksud{
+  font-family:'Fraunces',serif; font-style:italic;
+  font-size:.82rem; color:var(--muted);
+  margin-top:12px; line-height:1.5;
+}
+
+/* Tasbih section */
+.tasbih{
+  background:var(--box); border:1px solid var(--line);
+  border-radius:22px; padding:18px; margin-bottom:14px;
+}
+.target-row{
+  display:flex; justify-content:center; align-items:center;
+  gap:6px; font-size:.72rem; color:var(--muted); font-weight:600;
+  flex-wrap:wrap; margin-bottom:8px;
+}
+.target-row .current-target{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
+.chip{
+  background:var(--card); border:1px solid var(--line);
+  padding:4px 10px; border-radius:14px; font-size:.68rem;
+  font-weight:700; cursor:pointer; transition:.2s;
+  color:var(--ink); font-family:inherit;
+}
+.chip:hover{border-color:var(--accent)}
+.chip.danger{color:var(--danger)}
+.chip.danger:hover{border-color:var(--danger);background:rgba(185,28,28,.08)}
+
+/* Counter */
+.counter-wrap{position:relative;text-align:center;margin:8px 0 6px}
+.counter{
+  font-family:'Fraunces',serif; font-weight:600;
+  font-size:4.8rem; line-height:1; letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;
+  display:inline-block; transition:transform .08s,color .08s;
+}
+.pop-zikir{transform:scale(1.12);color:var(--accent)}
+.pop-selawat{transform:scale(1.12);color:var(--selawat)}
+.pop-milestone{transform:scale(1.2);color:var(--gold)}
+.undo-btn{
+  position:absolute; right:0; top:50%; transform:translateY(-50%);
+  background:var(--card); border:1px solid var(--line);
+  width:36px; height:36px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:1rem; color:var(--muted);
+  transition:.2s;
+}
+.undo-btn:hover{border-color:var(--danger);color:var(--danger)}
+.undo-btn:disabled{opacity:.3;cursor:not-allowed}
+
+/* Progress */
+.pb-wrap{
+  width:100%; background:var(--line); border-radius:8px;
+  height:6px; margin:12px 0 16px; overflow:hidden;
+}
+.pb{height:100%; width:0; transition:width .4s cubic-bezier(.2,.9,.3,1)}
+.zikir-mode .pb{background:linear-gradient(90deg,var(--accent),var(--accent-soft))}
+.selawat-mode .pb{background:linear-gradient(90deg,var(--selawat),var(--selawat-soft))}
+
+/* Preset row */
+.preset-row{
+  display:flex; gap:6px; justify-content:center; margin-bottom:14px;
+  flex-wrap:wrap;
+}
+.preset{
+  background:transparent; border:1px solid var(--line);
+  padding:6px 12px; border-radius:14px;
+  font-size:.7rem; font-weight:700; cursor:pointer;
+  color:var(--muted); font-family:inherit; transition:.2s;
+}
+.preset:hover,.preset.active{border-color:var(--accent);color:var(--accent);background:rgba(6,95,70,.05)}
+.selawat-mode .preset:hover,.selawat-mode .preset.active{border-color:var(--selawat);color:var(--selawat);background:rgba(30,64,175,.05)}
+
+/* Tap button */
+.tap-wrap{text-align:center;margin:6px 0}
+.tap{
+  border:none; width:140px; height:140px; border-radius:50%;
+  cursor:pointer; color:#fff; font-family:inherit; font-weight:800;
+  display:inline-flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:6px;
+  transition:transform .08s,box-shadow .2s;
+  touch-action:manipulation; user-select:none;
+  position:relative;
+}
+.tap::before{
+  content:""; position:absolute; inset:-4px; border-radius:50%;
+  border:2px solid currentColor; opacity:.2;
+}
+.zikir-mode .tap{
+  background:radial-gradient(circle at 30% 30%,var(--accent-soft),var(--accent));
+  box-shadow:0 12px 28px var(--accent-glow),inset 0 -4px 12px rgba(0,0,0,.15);
+}
+.selawat-mode .tap{
+  background:radial-gradient(circle at 30% 30%,var(--selawat-soft),var(--selawat));
+  box-shadow:0 12px 28px var(--selawat-glow),inset 0 -4px 12px rgba(0,0,0,.15);
+}
+.tap:active{transform:scale(.94)}
+.tap .tap-icon{font-size:1.5rem}
+.tap .tap-label{font-size:.75rem;letter-spacing:.1em}
+
+/* Dedication */
+.niat-box{
+  background:var(--box); border:1px solid var(--line);
+  border-radius:16px; padding:10px 14px; margin-bottom:14px;
+  display:flex; align-items:center; gap:8px;
+}
+.niat-icon{font-size:.9rem;opacity:.7}
+.niat-input{
+  flex:1; border:none; background:transparent; color:var(--ink);
+  font-family:inherit; font-size:.8rem; outline:none;
+}
+.niat-input::placeholder{color:var(--muted);font-style:italic}
+
+/* Prayer banner */
+.prayer-banner{
+  background:var(--box); border:1px solid var(--line);
+  border-radius:16px; padding:10px 14px; margin-bottom:14px;
+  display:flex; align-items:center; gap:10px;
+  font-size:.75rem; position:relative; overflow:hidden;
+  transition:.3s;
+}
+.prayer-banner.active{
+  background:linear-gradient(135deg,var(--accent),var(--accent-soft));
+  color:#fff; border-color:transparent;
+  box-shadow:0 8px 20px var(--accent-glow);
+}
+.prayer-banner.active.petang{
+  background:linear-gradient(135deg,#7c3aed,#a855f7);
+  box-shadow:0 8px 20px rgba(124,58,237,.35);
+}
+.prayer-icon{font-size:1.1rem;flex-shrink:0}
+.prayer-main{flex:1;min-width:0}
+.prayer-label{
+  font-size:.6rem;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;opacity:.8;
+}
+.prayer-detail{font-weight:600;margin-top:1px;font-variant-numeric:tabular-nums}
+.prayer-banner.active .prayer-detail{font-weight:700}
+.prayer-next{
+  font-size:.7rem;font-family:'Fraunces',serif;font-style:italic;
+  opacity:.7;flex-shrink:0;text-align:right;
+}
+.prayer-banner.loading{opacity:.5}
+
+/* Chart */
+.chart-card{
+  background:var(--box); border:1px solid var(--line);
+  border-radius:18px; padding:14px;
+}
+.chart-title{
+  font-size:.62rem; font-weight:700; color:var(--muted);
+  text-transform:uppercase; letter-spacing:.12em; margin-bottom:10px;
+  display:flex; justify-content:space-between;
+}
+.chart{
+  display:flex; justify-content:space-around; align-items:flex-end;
+  height:56px; gap:4px;
+}
+.bar-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:4px}
+.bar{
+  width:100%; border-radius:4px 4px 2px 2px; min-height:3px;
+  transition:height .6s cubic-bezier(.2,.9,.3,1);
+  position:relative;
+}
+.bar-over{position:absolute;top:0;left:0;right:0;height:3px;background:var(--gold);border-radius:2px}
+.zikir-mode .bar{background:var(--accent);opacity:.35}
+.selawat-mode .bar{background:var(--selawat);opacity:.35}
+.bar.today{opacity:1}
+.bar-label{font-size:.58rem;color:var(--muted);font-weight:700}
+
+/* Settings buttons */
+.actions{
+  display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;
+}
+.action-btn{
+  flex:1; min-width:0;
+  background:transparent; border:1px solid var(--line);
+  padding:10px 8px; border-radius:12px;
+  font-size:.7rem; font-weight:700; cursor:pointer;
+  color:var(--muted); font-family:inherit;
+  display:flex; align-items:center; justify-content:center; gap:4px;
+  transition:.2s;
+}
+.action-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Footer */
+.footer{
+  margin-top:18px; font-size:.6rem; color:var(--muted);
+  text-transform:uppercase; letter-spacing:.15em;
+  font-weight:700; text-align:center;
+}
+
+/* Bottom sheet modal */
+.sheet-overlay{
+  position:fixed; inset:0; background:rgba(0,0,0,.5);
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  display:flex; align-items:flex-end; justify-content:center;
+  z-index:1000; visibility:hidden; opacity:0;
+  transition:.3s;
+}
+.sheet-overlay.show{visibility:visible;opacity:1}
+.sheet{
+  background:var(--card); width:100%; max-width:440px;
+  border-radius:28px 28px 0 0;
+  padding:20px 20px calc(var(--safe-b) + 24px);
+  transform:translateY(100%); transition:transform .35s cubic-bezier(.2,.9,.3,1);
+  box-shadow:0 -10px 40px rgba(0,0,0,.2);
+}
+.sheet-overlay.show .sheet{transform:translateY(0)}
+.sheet-handle{
+  width:40px; height:4px; background:var(--line);
+  border-radius:2px; margin:0 auto 16px;
+}
+.sheet-title{
+  font-family:'Fraunces',serif; font-weight:600;
+  font-size:1.3rem; margin:0 0 4px; text-align:center;
+}
+.sheet-desc{color:var(--muted);font-size:.82rem;text-align:center;margin-bottom:16px}
+.sheet-input{
+  width:100%; padding:14px; border:2px solid var(--line);
+  background:var(--box); color:var(--ink);
+  border-radius:14px; font-family:inherit; font-size:1.4rem;
+  font-weight:700; text-align:center; outline:none;
+  box-sizing:border-box; font-variant-numeric:tabular-nums;
+  transition:.2s;
+}
+.sheet-input:focus{border-color:var(--accent)}
+.sheet-btn{
+  width:100%; padding:14px; margin-top:12px;
+  border:none; border-radius:14px;
+  font-family:inherit; font-weight:700; font-size:.9rem;
+  cursor:pointer; transition:.2s;
+}
+.sheet-btn.primary{background:var(--accent);color:#fff}
+.sheet-btn.primary:hover{background:var(--accent-soft)}
+.sheet-btn.ghost{background:transparent;color:var(--muted)}
+.sheet-btn.danger{background:var(--danger);color:#fff}
+
+/* Milestone modal special */
+.milestone-icon{font-size:3rem;text-align:center;margin-bottom:8px}
+
+/* Reminder row */
+.reminder-row{
+  display:flex;align-items:center;gap:10px;
+  padding:12px;background:var(--box);
+  border-radius:12px;margin-bottom:8px;
+}
+.reminder-row input[type=time]{
+  background:var(--card);border:1px solid var(--line);
+  padding:8px;border-radius:8px;color:var(--ink);
+  font-family:inherit;font-size:.9rem;
+}
+
+.hidden{display:none!important}
+
+/* Accessibility — focus ring */
+button:focus-visible,input:focus-visible{
+  outline:2px solid var(--accent); outline-offset:2px;
+}
+
+/* Install prompt */
+.install-banner{
+  background:linear-gradient(135deg,var(--accent),var(--accent-soft));
+  color:#fff; padding:10px 14px; border-radius:14px;
+  font-size:.78rem; margin-bottom:14px;
+  display:flex; align-items:center; gap:10px;
+}
+.install-banner button{
+  margin-left:auto; background:rgba(255,255,255,.2);
+  color:#fff; border:none; padding:6px 12px;
+  border-radius:10px; font-weight:700; font-size:.72rem;
+  cursor:pointer; font-family:inherit;
+}
+
+@media (max-height:700px){
+  .card{padding:18px 16px}
+  .title{font-size:1.6rem}
+  .counter{font-size:4rem}
+  .tap{width:120px;height:120px}
+  .arabic{font-size:1.7rem}
+}
+</style>
 </head>
 <body data-theme="light">
-<div class="card">
-    <div class="flex-between" style="margin-bottom:10px">
-        <div id="greeting-text" style="color:var(--accent-color);font-weight:800;font-size:.7rem;letter-spacing:1px;text-transform:uppercase">...</div>
-        <label class="theme-switch">
-            <input type="checkbox" id="checkbox" onclick="toggleTheme()">
-            <div class="slider flex-between"><span style="font-size:10px">🌙</span><span style="font-size:10px">☀️</span></div>
-        </label>
-    </div>
-    <h1 style="margin:0;font-weight:800;font-size:1.8rem;letter-spacing:-1px">Zikir & Selawat</h1>
-    <div id="current-date" style="color:var(--text-muted);font-size:.85rem;margin-bottom:15px"></div>
 
-<div class="tabs">
-        <button class="tab-btn active zikir-tab" onclick="switchMode('zikir')">ZIKIR</button>
-        <button class="tab-btn selawat-tab" onclick="switchMode('selawat')">SELAWAT</button>
-    </div>
-
-<div id="zikir-content" class="zikir-box">
-        <span id="label-hari" style="color:var(--accent-color);font-weight:800;font-size:.7rem;margin-bottom:8px">...</span>
-        <div id="zikir-display" class="arabic">...</div>
-        <div id="zikir-maksud" style="font-size:.85rem;color:var(--text-muted);font-style:italic;margin-top:10px;line-height:1.4">...</div>
-    </div>
-
-<div id="selawat-content" class="zikir-box hidden">
-        <span style="color:var(--selawat-color);font-weight:800;font-size:.7rem;margin-bottom:8px">SELAWAT NABI</span>
-        <div class="arabic">اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ</div>
-        <div style="font-size:.85rem;color:var(--text-muted);font-style:italic;margin-top:10px">"Ya Allah, berilah selawat ke atas Nabi Muhammad dan keluarganya."</div>
-    </div>
-
-<div class="tasbih-section zikir-mode" id="tasbih-area">
-        <div class="target-box">
-            <span>Target: <span id="target-val" style="color:var(--text-main)">0</span></span>
-            <button class="btn-tukar" onclick="action('set')">Tukar</button>
-            <button class="btn-reset" onclick="action('reset')">Reset</button>
-        </div>
-        <div class="counter-display" id="counter">0</div>
-        <div class="progress-container"><div class="progress-bar" id="pb"></div></div>
-        <button class="tap-area" onclick="action('inc')">
-            <img src="https://cdn-icons-png.flaticon.com/512/11441/11441383.png" style="width:28px;filter:brightness(0) invert(1);">
-            <span style="font-size:.75rem;font-weight:800">TEKAN</span>
-        </button>
-    </div>
-
-<div class="history-section">
-        <div id="hist-title" style="font-size:.65rem;font-weight:800;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">PRESTASI ZIKIR (7 HARI)</div>
-        <div class="chart-container" id="history-chart"></div>
-    </div>
-    <div style="margin-top:25px;font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;font-weight:700">Developed by Niskala Pawaka</div>
+<!-- Loading splash — shows instantly, hidden when JS ready -->
+<div id="splash" style="position:fixed;inset:0;background:#065f46;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .4s">
+  <svg width="96" height="96" viewBox="0 0 512 512" style="margin-bottom:20px">
+    <rect width="512" height="512" rx="110" fill="#065f46"/>
+    <g fill="none" stroke="#c9a227" stroke-width="14" stroke-linecap="round">
+      <circle cx="256" cy="180" r="42" fill="#c9a227"/>
+      <circle cx="170" cy="260" r="30"/>
+      <circle cx="342" cy="260" r="30"/>
+      <circle cx="200" cy="340" r="26"/>
+      <circle cx="312" cy="340" r="26"/>
+      <circle cx="256" cy="400" r="34" fill="#c9a227"/>
+      <path d="M256 222 L200 314 M256 222 L312 314 M200 366 L256 434 M312 366 L256 434 M170 290 L200 314 M342 290 L312 314"/>
+    </g>
+  </svg>
+  <div style="font-family:'Fraunces',Georgia,serif;font-size:1.4rem;font-weight:600;letter-spacing:-.02em">Zikir & Selawat</div>
+  <div style="margin-top:14px;width:36px;height:36px;border:3px solid rgba(255,255,255,.2);border-top-color:#c9a227;border-radius:50%;animation:spin 1s linear infinite"></div>
+  <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 </div>
 
-<div class="modal-overlay" id="successModal">
-    <div class="modal-content">
-        <span class="modal-icon" style="font-size:2rem;">🎉</span>
-        <h2 style="margin:0;font-size:1.5rem">Alhamdulillah!</h2>
-        <p id="modal-msg" style="color:var(--text-muted);font-size:.9rem;margin:10px 0">Sasaran tercapai.</p>
-        <button class="modal-btn" onclick="action('boost')">Tambah Target +100</button>
-        <button onclick="$('successModal').classList.remove('show')" style="background:0 0;border:none;margin-top:15px;color:var(--text-muted);cursor:pointer;font-size:.8rem;text-decoration:underline">Tutup</button>
+<noscript>
+  <div style="padding:40px;text-align:center;font-family:system-ui,sans-serif">
+    <h2>JavaScript diperlukan</h2>
+    <p>App ini memerlukan JavaScript diaktifkan.</p>
+  </div>
+</noscript>
+
+<main class="card" role="main">
+
+<header class="header">
+    <span class="greeting" id="greeting">...</span>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="streak-pill" id="streak-pill" aria-label="Streak hari">🔥 <span id="streak-val">0</span></span>
+      <label class="theme-switch" aria-label="Togol tema">
+        <input type="checkbox" id="theme-check">
+        <span class="slider"></span>
+      </label>
     </div>
+  </header>
+
+<h1 class="title">Zikir & Selawat</h1>
+  <div class="subtitle" id="date-display"></div>
+
+<div id="install-banner" class="install-banner hidden">
+    <span>📲 Pasang sebagai app untuk akses pantas</span>
+    <button id="install-btn">Pasang</button>
+  </div>
+
+<!-- Prayer banner (SGR03) -->
+  <div class="prayer-banner loading" id="prayer-banner" role="status" aria-live="polite">
+    <span class="prayer-icon" id="prayer-icon">🕌</span>
+    <div class="prayer-main">
+      <div class="prayer-label" id="prayer-label">Waktu Solat · Kuala Langat</div>
+      <div class="prayer-detail" id="prayer-detail">Memuatkan…</div>
+    </div>
+    <div class="prayer-next" id="prayer-next"></div>
+  </div>
+
+<!-- Stats -->
+  <div class="stats-row">
+    <div class="stat">
+      <div class="stat-label">Hari Ini</div>
+      <div class="stat-val accent" id="stat-today">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Streak</div>
+      <div class="stat-val gold" id="stat-streak">0</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Keseluruhan</div>
+      <div class="stat-val" id="stat-lifetime">0</div>
+    </div>
+  </div>
+
+<!-- Tabs -->
+  <nav class="tabs" role="tablist">
+    <button class="tab-btn active" data-mode="zikir" role="tab" aria-selected="true">ZIKIR</button>
+    <button class="tab-btn" data-mode="selawat" role="tab" aria-selected="false">SELAWAT</button>
+  </nav>
+
+<!-- Zikir display -->
+  <section id="zikir-content" class="zikir-box" aria-live="polite">
+    <span class="zikir-label" id="zikir-label">...</span>
+    <div class="arabic" id="zikir-arabic">...</div>
+    <div class="maksud" id="zikir-maksud">...</div>
+  </section>
+
+<section id="selawat-content" class="zikir-box hidden" aria-live="polite">
+    <span class="zikir-label selawat-label">SELAWAT NABI ﷺ</span>
+    <div class="arabic">اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ</div>
+    <div class="maksud">"Ya Allah, berilah selawat ke atas Nabi Muhammad dan keluarganya."</div>
+  </section>
+
+<!-- Niat / dedication -->
+  <div class="niat-box">
+    <span class="niat-icon">✦</span>
+    <input type="text" id="niat-input" class="niat-input"
+           placeholder="Niat atau hadiah untuk… (pilihan)"
+           maxlength="80" aria-label="Niat atau dedikasi">
+  </div>
+
+<!-- Tasbih -->
+  <section class="tasbih zikir-mode" id="tasbih" aria-label="Penghitung tasbih">
+    <div class="target-row">
+      <span>Sasaran: <span class="current-target" id="target-val">0</span></span>
+      <button class="chip" id="btn-set-target">Tukar</button>
+      <button class="chip danger" id="btn-reset">Reset</button>
+    </div>
+
+<div class="preset-row" role="group" aria-label="Sasaran pantas">
+      <button class="preset" data-preset="33">33×</button>
+      <button class="preset" data-preset="100">100×</button>
+      <button class="preset" data-preset="300">300×</button>
+      <button class="preset" data-preset="1000">1000×</button>
+    </div>
+
+<div class="counter-wrap">
+      <span class="counter" id="counter">0</span>
+      <button class="undo-btn" id="undo-btn" aria-label="Undo" title="Tolak satu">↶</button>
+    </div>
+
+<div class="pb-wrap"><div class="pb" id="pb"></div></div>
+
+<div class="tap-wrap">
+      <button class="tap" id="tap-btn" aria-label="Tambah kiraan">
+        <span class="tap-icon">✦</span>
+        <span class="tap-label">TEKAN</span>
+      </button>
+    </div>
+  </section>
+
+<!-- History chart -->
+  <section class="chart-card">
+    <div class="chart-title">
+      <span id="chart-title-text">7 HARI TERAKHIR</span>
+      <span style="color:var(--gold)" id="chart-sum">0</span>
+    </div>
+    <div class="chart" id="chart"></div>
+  </section>
+
+<!-- Actions -->
+  <div class="actions">
+    <button class="action-btn" id="btn-reminder">⏰ Ingatan</button>
+    <button class="action-btn" id="btn-export">📤 Backup</button>
+    <button class="action-btn" id="btn-about">ℹ️ Info</button>
+  </div>
+
+<div class="footer">Niskala Pawaka · Kariah Sungai Lang Baru</div>
+</main>
+
+<!-- Modals (bottom sheets) -->
+
+<div class="sheet-overlay" id="sheet-target" data-dismiss="true">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2 class="sheet-title">Tukar Sasaran</h2>
+    <p class="sheet-desc">Berapa kiraan yang ingin dicapai hari ini?</p>
+    <input type="number" id="target-input" class="sheet-input" inputmode="numeric" min="1" max="100000">
+    <button class="sheet-btn primary" id="btn-save-target">Simpan</button>
+    <button class="sheet-btn ghost" data-close>Batal</button>
+  </div>
 </div>
 
-<div class="modal-overlay" id="targetModal">
-    <div class="modal-content">
-        <h2 style="margin:0;font-size:1.3rem">Set Sasaran</h2>
-        <p style="color:var(--text-muted);font-size:.8rem;margin:5px 0 0">Masukkan sasaran baru anda:</p>
-        <input type="number" id="new-target-input" inputmode="numeric" pattern="[0-9]*" class="modal-input">
-        <button class="modal-btn" onclick="action('saveTarget')" id="btn-save-target">Simpan</button>
-        <button onclick="$('targetModal').classList.remove('show')" style="background:0 0;border:none;margin-top:15px;color:var(--text-muted);cursor:pointer;font-size:.8rem;text-decoration:underline">Batal</button>
+<div class="sheet-overlay" id="sheet-milestone" data-dismiss="true">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="milestone-icon" id="milestone-icon">🎉</div>
+    <h2 class="sheet-title" id="milestone-title">Alhamdulillah!</h2>
+    <p class="sheet-desc" id="milestone-desc">Sasaran tercapai.</p>
+    <button class="sheet-btn primary" id="btn-boost">Tambah +100 Sasaran</button>
+    <button class="sheet-btn ghost" data-close>Tutup</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="sheet-confirm" data-dismiss="true">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2 class="sheet-title" id="confirm-title">Pasti?</h2>
+    <p class="sheet-desc" id="confirm-desc">Tindakan ini tidak boleh dibatalkan.</p>
+    <button class="sheet-btn danger" id="confirm-ok">Teruskan</button>
+    <button class="sheet-btn ghost" data-close>Batal</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="sheet-reminder" data-dismiss="true">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2 class="sheet-title">Ingatan Harian</h2>
+    <p class="sheet-desc">Dapat peringatan untuk zikir pagi & petang.</p>
+
+<div style="display:flex;gap:6px;margin-bottom:14px;background:var(--box);padding:4px;border-radius:12px;border:1px solid var(--line)">
+      <button class="rem-mode-btn active" data-rmode="auto" style="flex:1;padding:8px;border:none;background:var(--card);border-radius:8px;font-weight:700;font-size:.75rem;cursor:pointer;color:var(--accent);font-family:inherit">🕌 Auto (Ikut Solat)</button>
+      <button class="rem-mode-btn" data-rmode="manual" style="flex:1;padding:8px;border:none;background:transparent;border-radius:8px;font-weight:700;font-size:.75rem;cursor:pointer;color:var(--muted);font-family:inherit">⏰ Tetap</button>
     </div>
+
+<div id="rem-auto-info" style="padding:12px;background:var(--box);border-radius:12px;margin-bottom:8px;font-size:.78rem;line-height:1.5;color:var(--muted)">
+      Peringatan akan dihantar <strong style="color:var(--ink)">15 min selepas Subuh</strong> (untuk zikir pagi) dan <strong style="color:var(--ink)">5 min selepas Maghrib</strong> (untuk zikir petang), ikut waktu solat zon SGR03 (Kuala Langat).
+    </div>
+
+<div id="rem-manual-rows" class="hidden">
+      <div class="reminder-row">
+        <span>🌅 Pagi</span>
+        <input type="time" id="rem-pagi" value="06:00">
+      </div>
+      <div class="reminder-row">
+        <span>🌆 Petang</span>
+        <input type="time" id="rem-petang" value="18:30">
+      </div>
+    </div>
+
+<p style="font-size:.72rem;color:var(--muted);text-align:center;margin:8px 0" id="rem-status">Notifikasi: belum diaktifkan</p>
+    <button class="sheet-btn primary" id="btn-save-reminder">Simpan & Aktifkan</button>
+    <button class="sheet-btn ghost" id="btn-disable-reminder" style="color:var(--danger)">Matikan Ingatan</button>
+    <button class="sheet-btn ghost" data-close>Tutup</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="sheet-about" data-dismiss="true">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h2 class="sheet-title">Tentang</h2>
+    <p class="sheet-desc" style="text-align:left;line-height:1.6">
+      Tasbih digital dengan zikir harian, selawat, streak, dan backup.
+      Data tersimpan di peranti anda sahaja.<br><br>
+      <strong>Tip:</strong> Tambah ke skrin utama untuk akses pantas seperti app sebenar.
+    </p>
+    <button class="sheet-btn primary" data-close>OK</button>
+  </div>
 </div>
 
 <script>
-    const $ = id => document.getElementById(id);
-    const zData = [
-        { h:"Ahad", t:"يَا حَيُّ يَا قَيُّوْمُ", m:"Wahai Tuhan Yang Maha Hidup, Yang Maha Berdiri Sendiri." },
-        { h:"Isnin", t:"لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ الْعَلِيِّ الْعَظِيْمِ", m:"Tiada daya dan kekuatan melainkan dengan pertolongan Allah." },
-        { h:"Selasa", t:"اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ", m:"Ya Allah, berilah selawat ke atas Nabi Muhammad dan keluarganya." },
-        { h:"Rabu", t:"أَسْتَغْفِرُ اللهَ الْعَظِيْمَ", m:"Aku memohon ampun kepada Allah Yang Maha Agung." },
-        { h:"Khamis", t:"سُبْحَانَ اللهِ وَبِحَمْدِهِ سُبْحَانَ اللهِ الْعَظِيْمِ", m:"Maha Suci Allah dengan segala puji bagi-Nya." },
-        { h:"Jumaat", t:"يَا اللهُ", m:"Wahai Allah." },
-        { h:"Sabtu", t:"لَا إِلَهَ إِلَّا اللهُ", m:"Tiada Tuhan yang berhak disembah melainkan Allah." }
-    ];
+"use strict";
 
-    let mode = 'zikir';
-    const now = new Date(), dtStr = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    const todayKey = dtStr(now);
-    let hist = JSON.parse(localStorage.getItem('kariah_v6_history')) || {};
-    if (!hist[todayKey]) hist[todayKey] = { zikir:0, selawat:0, targetZikir:1000, targetSelawat:1000, celebratedZ:false, celebratedS:false };
+/* ============ CONSTANTS ============ */
+const $=id=>document.getElementById(id);
+const STORAGE_KEY='zikir_selawat_v7';
+const DAYS=['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
+const DAYS_SHORT=['A','I','S','R','K','J','S'];
 
-    const K = { zikir: {c:'zikir', t:'targetZikir', cel:'celebratedZ', col:'--accent-color', lbl:'ZIKIR'}, selawat: {c:'selawat', t:'targetSelawat', cel:'celebratedS', col:'--selawat-color', lbl:'SELAWAT'} };
+const ZIKIR=[
+  {h:"Ahad",    t:"يَا حَيُّ يَا قَيُّوْمُ", m:"Wahai Tuhan Yang Maha Hidup, Yang Maha Berdiri Sendiri."},
+  {h:"Isnin",   t:"لَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ الْعَلِيِّ الْعَظِيْمِ", m:"Tiada daya dan kekuatan melainkan dengan pertolongan Allah."},
+  {h:"Selasa",  t:"اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ", m:"Ya Allah, berilah selawat ke atas Nabi Muhammad dan keluarganya."},
+  {h:"Rabu",    t:"أَسْتَغْفِرُ اللهَ الْعَظِيْمَ", m:"Aku memohon ampun kepada Allah Yang Maha Agung."},
+  {h:"Khamis",  t:"سُبْحَانَ اللهِ وَبِحَمْدِهِ سُبْحَانَ اللهِ الْعَظِيْمِ", m:"Maha Suci Allah dengan segala puji bagi-Nya."},
+  {h:"Jumaat",  t:"يَا اللهُ", m:"Wahai Allah."},
+  {h:"Sabtu",   t:"لَا إِلَهَ إِلَّا اللهُ", m:"Tiada Tuhan yang berhak disembah melainkan Allah."}
+];
 
-    function switchMode(m) {
-        mode = m;
-        $('zikir-content').classList.toggle('hidden', m !== 'zikir');
-        $('selawat-content').classList.toggle('hidden', m === 'zikir');
-        $('tasbih-area').className = `tasbih-section ${m}-mode`;
-        document.querySelector('.zikir-tab').classList.toggle('active', m === 'zikir');
-        document.querySelector('.selawat-tab').classList.toggle('active', m === 'selawat');
-        
-        let color = `var(${K[m].col})`;
-        document.querySelectorAll('.modal-btn').forEach(btn => btn.style.background = color);
-        $('new-target-input').style.borderColor = color; 
-        
-        $('hist-title').innerText = `PRESTASI ${K[m].lbl} (7 HARI)`;
-        updateUI();
+const MODE_KEYS={
+  zikir:   {c:'zikir',   t:'targetZikir',   cel:'celZ', col:'accent',  name:'Zikir'},
+  selawat: {c:'selawat', t:'targetSelawat', cel:'celS', col:'selawat', name:'Selawat'}
+};
+
+const MILESTONES=[100,500,1000,5000,10000,33000,100000,500000];
+
+/* ============ PRAYER TIMES (SGR03) ============ */
+const PRAYER_ZONE='SGR03';
+const PRAYER_CACHE_KEY='prayer_cache_'+PRAYER_ZONE;
+const PRAYER_API=`https://api.waktusolat.app/v2/solat/${PRAYER_ZONE}`;
+let prayerData=null; // today's prayers {fajr, syuruk, dhuhr, asr, maghrib, isha} as Date
+let prayerReminderTimers=[];
+
+async function fetchPrayerMonth(year, month){
+  const cacheKey=`${year}-${String(month).padStart(2,'0')}`;
+  let cache={};
+  try{ cache=JSON.parse(localStorage.getItem(PRAYER_CACHE_KEY)||'{}'); }catch(e){}
+  if(cache[cacheKey]?.prayers?.length) return cache[cacheKey];
+  try{
+    const res=await fetch(`${PRAYER_API}?year=${year}&month=${month}`);
+    if(!res.ok) throw new Error('API '+res.status);
+    const data=await res.json();
+    if(data?.prayers?.length){
+      cache[cacheKey]=data;
+      // Keep only 3 most recent months
+      const keys=Object.keys(cache).sort().slice(-3);
+      const trimmed={}; keys.forEach(k=>trimmed[k]=cache[k]);
+      localStorage.setItem(PRAYER_CACHE_KEY, JSON.stringify(trimmed));
     }
+    return data;
+  }catch(e){
+    console.warn('Prayer API failed, using last cache if any',e);
+    // Fallback: return any cached month we have
+    const keys=Object.keys(cache);
+    return keys.length ? cache[keys[keys.length-1]] : null;
+  }
+}
 
-    function updateUI() {
-        let d = hist[todayKey], mk = K[mode];
-        $('counter').innerText = d[mk.c];
-        $('target-val').innerText = d[mk.t];
-        $('pb').style.width = Math.min((d[mk.c] / d[mk.t]) * 100, 100) + "%";
-        
-        let chartHTML = '';
-        for (let i=6; i>=0; i--) {
-            let dt = new Date(); dt.setDate(dt.getDate() - i);
-            let ds = dtStr(dt), v = hist[ds]?.[mk.c] || 0, tg = hist[ds]?.[mk.t] || 1000;
-            chartHTML += `<div style="display:flex;flex-direction:column;align-items:center;width:12%;"><div class="bar ${ds===todayKey?'today':''}" style="height:${Math.min((v/tg)*50, 50)}px"></div><div style="font-size:.6rem;color:var(--text-muted);margin-top:4px;font-weight:700">${['A','I','S','R','K','J','S'][dt.getDay()]}</div></div>`;
-        }
-        $('history-chart').innerHTML = chartHTML;
-    }
+function toDate(unix){ return new Date(unix*1000); }
+function fmtTime(d){
+  return d.toLocaleTimeString('ms-MY',{hour:'2-digit',minute:'2-digit',hour12:false});
+}
 
-    function action(act) {
-        let d = hist[todayKey], mk = K[mode];
-        if (act === 'inc') {
-            d[mk.c]++;
-            $('counter').classList.add(`pop-${mode}`);
-            setTimeout(() => $('counter').classList.remove(`pop-${mode}`), 100);
-            if(navigator.vibrate) navigator.vibrate(60);
-            if (d[mk.c] >= d[mk.t] && !d[mk.cel]) {
-                if(navigator.vibrate) navigator.vibrate(500);
-                confetti({ particleCount:200, spread:90, origin:{y:.6}, colors:[mode==='zikir'?'#38a169':'#3182ce','#fff','#ffd700'] });
-                $('modal-msg').innerText = `Alhamdulillah! Sasaran ${d[mk.t]} kali ${mode} hari ini tercapai.`;
-                $('successModal').classList.add('show');
-                d[mk.cel] = true;
-            }
-        } else if (act === 'boost') {
-            d[mk.t] += 100; d[mk.cel] = false; $('successModal').classList.remove('show');
-        } else if (act === 'reset' && confirm(`Pasti mahu reset kiraan ${mode} kepada 0?`)) {
-            d[mk.c] = 0; d[mk.cel] = false;
-        } else if (act === 'set') {
-            $('new-target-input').value = d[mk.t];
-            $('targetModal').classList.add('show');
-            setTimeout(() => $('new-target-input').focus(), 100);
-            return; 
-        } else if (act === 'saveTarget') {
-            let n = $('new-target-input').value;
-            if (n && !isNaN(n) && n > 0) { 
-                d[mk.t] = parseInt(n); d[mk.cel] = false; 
-                $('targetModal').classList.remove('show');
-            } else { alert("Sila masukkan nombor sah (>0)."); return; }
-        }
-        localStorage.setItem('kariah_v6_history', JSON.stringify(hist));
-        updateUI();
-    }
+async function loadTodayPrayers(){
+  const data=await fetchPrayerMonth(now.getFullYear(), now.getMonth()+1);
+  if(!data?.prayers) return null;
+  const todayEntry=data.prayers.find(p=>p.day===now.getDate());
+  if(!todayEntry) return null;
+  return {
+    fajr:     toDate(todayEntry.fajr),
+    syuruk:   toDate(todayEntry.syuruk),
+    dhuhr:    toDate(todayEntry.dhuhr),
+    asr:      toDate(todayEntry.asr),
+    maghrib:  toDate(todayEntry.maghrib),
+    isha:     toDate(todayEntry.isha),
+    hijri:    todayEntry.hijri
+  };
+}
 
-    function toggleTheme() {
-        let isD = $('checkbox').checked;
-        document.body.setAttribute('data-theme', isD ? 'dark' : 'light');
-        localStorage.setItem('theme', isD ? 'dark' : 'light');
-        updateMetaTheme();
-    }
+/**
+ * Pulangkan status zikir pagi/petang:
+ *   'pagi'    = selepas Subuh sebelum Syuruk (masa mathurat pagi)
+ *   'petang'  = selepas Asar sebelum Maghrib (masa mathurat petang)
+ *   'malam'   = selepas Maghrib sebelum Isyak (boleh juga petang lanjut)
+ *   null      = bukan waktu optimal
+ */
+function zikirWindow(p){
+  const t=new Date();
+  if(t>=p.fajr && t<p.syuruk)     return 'pagi';
+  if(t>=p.asr && t<p.maghrib)     return 'petang';
+  if(t>=p.maghrib && t<p.isha)    return 'malam';
+  return null;
+}
 
-    function updateMetaTheme() {
-        const themeColor = document.querySelector('meta[name="theme-color"]');
-        if (document.body.getAttribute('data-theme') === 'dark') {
-            themeColor.setAttribute('content', '#1a202c');
-        } else {
-            themeColor.setAttribute('content', '#f0f4f8');
-        }
-    }
+function nextPrayer(p){
+  const t=new Date();
+  const order=[['Subuh','fajr'],['Syuruk','syuruk'],['Zohor','dhuhr'],['Asar','asr'],['Maghrib','maghrib'],['Isyak','isha']];
+  for(const [name,k] of order){
+    if(p[k]>t) return {name, time:p[k]};
+  }
+  return null; // semua solat dah lepas
+}
 
-    if(localStorage.getItem('theme') === 'dark') { 
-        document.body.setAttribute('data-theme', 'dark'); 
-        $('checkbox').checked = true; 
-        updateMetaTheme();
-    }
-    
-    let info = zData[now.getDay()], h = now.getHours();
-    $('label-hari').innerText = "HARI " + info.h.toUpperCase();
-    $('zikir-display').innerText = info.t;
-    $('zikir-maksud').innerText = info.m;
-    $('current-date').innerText = now.toLocaleDateString('ms-MY', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
-    $('greeting-text').innerText = h<12 ? "Selamat Pagi" : h<17 ? "Selamat Tengahari" : h<20 ? "Selamat Petang" : "Selamat Malam";
-    updateUI();
+function renderPrayerBanner(){
+  const b=$('prayer-banner');
+  if(!prayerData){
+    b.classList.remove('active','petang');
+    b.classList.add('loading');
+    $('prayer-icon').textContent='🕌';
+    $('prayer-label').textContent='Waktu Solat · Kuala Langat';
+    $('prayer-detail').textContent='Sambungan tiada (guna manual)';
+    $('prayer-next').textContent='';
+    return;
+  }
+  b.classList.remove('loading');
+  const win=zikirWindow(prayerData);
+  const next=nextPrayer(prayerData);
 
-    // --- Pendaftaran Service Worker PWA ---
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then(reg => console.log('Zikir PWA Service Worker Aktif!', reg.scope))
-                .catch(err => console.error('Pendaftaran SW Gagal:', err));
-        });
+  if(win==='pagi'){
+    b.classList.add('active'); b.classList.remove('petang');
+    $('prayer-icon').textContent='🌅';
+    $('prayer-label').textContent='WAKTU ZIKIR PAGI';
+    $('prayer-detail').textContent=`Subuh ${fmtTime(prayerData.fajr)} · hingga Syuruk ${fmtTime(prayerData.syuruk)}`;
+    $('prayer-next').textContent='';
+  } else if(win==='petang' || win==='malam'){
+    b.classList.add('active','petang');
+    $('prayer-icon').textContent='🌆';
+    $('prayer-label').textContent='WAKTU ZIKIR PETANG';
+    const end = win==='petang' ? prayerData.maghrib : prayerData.isha;
+    $('prayer-detail').textContent=`Maghrib ${fmtTime(prayerData.maghrib)} · hingga ${win==='petang'?'Maghrib':'Isyak'} ${fmtTime(end)}`;
+    $('prayer-next').textContent='';
+  } else {
+    b.classList.remove('active','petang');
+    $('prayer-icon').textContent='🕌';
+    $('prayer-label').textContent='WAKTU SOLAT · SGR03';
+    $('prayer-detail').textContent = next
+      ? `${next.name} ${fmtTime(next.time)}`
+      : `Subuh esok ${fmtTime(prayerData.fajr)}`;
+    if(next){
+      const mins=Math.round((next.time-new Date())/60000);
+      $('prayer-next').textContent = mins<60 ? `${mins} min lagi` : `${Math.floor(mins/60)}j ${mins%60}m`;
+    } else {
+      $('prayer-next').textContent='';
     }
+  }
+}
+
+function schedulePrayerReminders(){
+  prayerReminderTimers.forEach(t=>clearTimeout(t));
+  prayerReminderTimers=[];
+  if(!prayerData) return;
+  if(!S.reminder.enabled || S.reminder.mode!=='auto') return;
+  if(!('Notification' in window) || Notification.permission!=='granted') return;
+
+  const t=new Date();
+  // 15 min selepas Subuh → zikir pagi
+  const pagiTime=new Date(prayerData.fajr.getTime()+15*60000);
+  // 5 min selepas Maghrib → zikir petang
+  const petangTime=new Date(prayerData.maghrib.getTime()+5*60000);
+
+  [
+    {when:pagiTime, body:'Mulakan hari dengan zikir pagi 🌅', tag:'zikir-pagi'},
+    {when:petangTime, body:'Jangan lupa zikir petang 🌆', tag:'zikir-petang'}
+  ].forEach(({when,body,tag})=>{
+    const ms=when-t;
+    if(ms<=0) return; // dah lepas hari ni
+    prayerReminderTimers.push(setTimeout(()=>{
+      new Notification('Waktu Zikir',{
+        body, tag,
+        icon:'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22110%22 fill=%22%23065f46%22/><circle cx=%22256%22 cy=%22180%22 r=%2242%22 fill=%22%23c9a227%22/><circle cx=%22170%22 cy=%22260%22 r=%2230%22 fill=%22%23c9a227%22/><circle cx=%22342%22 cy=%22260%22 r=%2230%22 fill=%22%23c9a227%22/><circle cx=%22256%22 cy=%22400%22 r=%2234%22 fill=%22%23c9a227%22/></svg>'
+      });
+    }, ms));
+  });
+  // Reschedule pukul 12 malam utk hari baru
+  const midnight=new Date(); midnight.setHours(24,0,5,0);
+  prayerReminderTimers.push(setTimeout(async()=>{
+    prayerData=await loadTodayPrayers();
+    renderPrayerBanner();
+    schedulePrayerReminders();
+  }, midnight-t));
+}
+
+/* ============ STATE ============ */
+const now=new Date();
+const dtStr=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const todayKey=dtStr(now);
+let mode='zikir';
+let lastActionStack=[];   // utk undo (simpan {mode, delta} setiap tap)
+let celebratedForMode=null; // elak bug silap mode
+let deferredInstall=null;
+
+/* Default state */
+const defaultState=()=>({
+  history:{}, // {dateKey: {zikir,selawat,targetZikir,targetSelawat,celZ,celS,niat}}
+  lifetime:{zikir:0, selawat:0},
+  milestonesHit:[], // array of "zikir:100", "selawat:1000" etc
+  reminder:{pagi:"06:00", petang:"18:30", enabled:false, mode:'auto'}
+});
+
+function loadState(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw) return defaultState();
+    const parsed=JSON.parse(raw);
+    // Migrate old schema if needed
+    return {...defaultState(), ...parsed};
+  }catch(e){
+    console.warn('Storage corrupted, reset',e);
+    return defaultState();
+  }
+}
+let S=loadState();
+
+function saveState(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(S));
+  }catch(e){
+    console.error('Save failed',e);
+    toast('Gagal simpan — storan penuh?');
+  }
+}
+
+/* Ensure today entry exists */
+function today(){
+  if(!S.history[todayKey]){
+    S.history[todayKey]={
+      zikir:0, selawat:0,
+      targetZikir:1000, targetSelawat:1000,
+      celZ:false, celS:false, niat:''
+    };
+  }
+  return S.history[todayKey];
+}
+
+/* ============ STREAK ============ */
+function computeStreak(){
+  let streak=0;
+  const d=new Date(now);
+  for(let i=0;i<365;i++){
+    const k=dtStr(d);
+    const e=S.history[k];
+    const total=(e?.zikir||0)+(e?.selawat||0);
+    if(i===0 && total===0) break; // belum mula hari ni, streak dihentikan
+    if(total>0) streak++;
+    else break;
+    d.setDate(d.getDate()-1);
+  }
+  return streak;
+}
+
+/* ============ UI UPDATE ============ */
+function updateUI(){
+  const d=today();
+  const mk=MODE_KEYS[mode];
+
+  $('counter').textContent=d[mk.c];
+  $('target-val').textContent=d[mk.t];
+  $('pb').style.width=Math.min((d[mk.c]/d[mk.t])*100,100)+'%';
+
+  // Stats
+  $('stat-today').textContent=d[mk.c];
+  $('stat-lifetime').textContent=formatNum(S.lifetime[mk.c]);
+  const streak=computeStreak();
+  $('stat-streak').textContent=streak;
+  $('streak-val').textContent=streak;
+
+  // Niat
+  $('niat-input').value=d.niat||'';
+
+  // Preset active state
+  document.querySelectorAll('.preset').forEach(b=>{
+    b.classList.toggle('active', parseInt(b.dataset.preset)===d[mk.t]);
+  });
+
+  // Undo button
+  $('undo-btn').disabled=!lastActionStack.some(a=>a.mode===mode);
+
+  // Chart
+  renderChart(mk);
+}
+
+function formatNum(n){
+  if(n>=1000000) return (n/1000000).toFixed(1)+'M';
+  if(n>=10000) return (n/1000).toFixed(1)+'k';
+  return n.toLocaleString('ms-MY');
+}
+
+function renderChart(mk){
+  const chart=$('chart');
+  let html=''; let sum=0;
+  for(let i=6;i>=0;i--){
+    const d=new Date(now); d.setDate(d.getDate()-i);
+    const k=dtStr(d);
+    const v=S.history[k]?.[mk.c]||0;
+    const tg=S.history[k]?.[mk.t]||1000;
+    sum+=v;
+    const pct=(v/tg)*100;
+    const h=Math.min(pct,100)/100*50;
+    const over=pct>100;
+    html+=`<div class="bar-col">
+      <div class="bar ${k===todayKey?'today':''}" style="height:${h+3}px">
+        ${over?'<div class="bar-over" title="Lebihi sasaran"></div>':''}
+      </div>
+      <div class="bar-label">${DAYS_SHORT[d.getDay()]}</div>
+    </div>`;
+  }
+  chart.innerHTML=html;
+  $('chart-sum').textContent=formatNum(sum)+' minggu ini';
+}
+
+/* ============ MODE SWITCH ============ */
+function switchMode(m){
+  mode=m;
+  $('zikir-content').classList.toggle('hidden', m!=='zikir');
+  $('selawat-content').classList.toggle('hidden', m==='zikir');
+  $('tasbih').className=`tasbih ${m}-mode`;
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    const on=b.dataset.mode===m;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-selected', on);
+  });
+  $('chart-title-text').textContent=m==='zikir'?'ZIKIR · 7 HARI':'SELAWAT · 7 HARI';
+  updateUI();
+}
+
+/* ============ CORE ACTIONS ============ */
+function increment(){
+  const d=today();
+  const mk=MODE_KEYS[mode];
+  d[mk.c]++;
+  S.lifetime[mk.c]++;
+  lastActionStack.push({mode, dateKey:todayKey, delta:1});
+  if(lastActionStack.length>50) lastActionStack.shift();
+
+  // Animate
+  const counter=$('counter');
+  counter.classList.add(`pop-${mode}`);
+  setTimeout(()=>counter.classList.remove(`pop-${mode}`),100);
+
+  // Haptic (light)
+  if(navigator.vibrate) navigator.vibrate(35);
+
+  // Check daily target
+  if(d[mk.c]>=d[mk.t] && !d[mk.cel]){
+    celebrateTarget(d[mk.t]);
+    d[mk.cel]=true;
+    celebratedForMode=mode;
+  }
+
+  // Check lifetime milestones
+  const ms=MILESTONES.find(m=>S.lifetime[mk.c]===m);
+  if(ms){
+    const key=`${mk.c}:${ms}`;
+    if(!S.milestonesHit.includes(key)){
+      S.milestonesHit.push(key);
+      celebrateMilestone(mk.name, ms);
+    }
+  }
+
+  saveState();
+  updateUI();
+}
+
+function undoLast(){
+  const last=[...lastActionStack].reverse().find(a=>a.mode===mode);
+  if(!last) return;
+  const i=lastActionStack.lastIndexOf(last);
+  lastActionStack.splice(i,1);
+  const d=S.history[last.dateKey];
+  const mk=MODE_KEYS[last.mode];
+  if(d && d[mk.c]>0){
+    d[mk.c]-=last.delta;
+    S.lifetime[mk.c]=Math.max(0, S.lifetime[mk.c]-last.delta);
+    // Boleh "un-celebrate" jika fall below
+    if(d[mk.c]<d[mk.t]) d[mk.cel]=false;
+  }
+  if(navigator.vibrate) navigator.vibrate(15);
+  saveState();
+  updateUI();
+}
+
+function resetToday(){
+  openConfirm(
+    `Reset kiraan ${MODE_KEYS[mode].name}?`,
+    `Kiraan ${MODE_KEYS[mode].name} hari ini akan kembali ke 0. Total keseluruhan tidak terjejas.`,
+    ()=>{
+      const d=today(); const mk=MODE_KEYS[mode];
+      d[mk.c]=0; d[mk.cel]=false;
+      lastActionStack=lastActionStack.filter(a=>!(a.mode===mode && a.dateKey===todayKey));
+      saveState(); updateUI();
+    }
+  );
+}
+
+function setTargetPreset(n){
+  const d=today(); const mk=MODE_KEYS[mode];
+  d[mk.t]=n; d[mk.cel]=d[mk.c]>=n;
+  saveState(); updateUI();
+}
+
+function openTargetSheet(){
+  const d=today(); const mk=MODE_KEYS[mode];
+  $('target-input').value=d[mk.t];
+  openSheet('sheet-target');
+  setTimeout(()=>$('target-input').focus(),250);
+}
+
+function saveTarget(){
+  const v=parseInt($('target-input').value,10);
+  if(!v || v<1 || v>100000){
+    $('target-input').style.borderColor='var(--danger)';
+    if(navigator.vibrate) navigator.vibrate([50,50,50]);
+    return;
+  }
+  const d=today(); const mk=MODE_KEYS[mode];
+  d[mk.t]=v; d[mk.cel]=d[mk.c]>=v;
+  closeSheet('sheet-target');
+  saveState(); updateUI();
+}
+
+/* ============ CELEBRATIONS ============ */
+function celebrateTarget(n){
+  if(navigator.vibrate) navigator.vibrate([60,30,60,30,120]);
+  if(typeof confetti==='function') confetti({
+    particleCount:180, spread:90, origin:{y:.7},
+    colors:[mode==='zikir'?'#065f46':'#1e40af','#c9a227','#fff']
+  });
+  $('milestone-icon').textContent='🌟';
+  $('milestone-title').textContent='Alhamdulillah!';
+  $('milestone-desc').textContent=`Sasaran ${n.toLocaleString('ms-MY')} kali ${MODE_KEYS[mode].name} tercapai. Teruskan lagi?`;
+  openSheet('sheet-milestone');
+}
+
+function celebrateMilestone(modeName, count){
+  if(navigator.vibrate) navigator.vibrate([100,50,100,50,200]);
+  $('counter').classList.add('pop-milestone');
+  setTimeout(()=>$('counter').classList.remove('pop-milestone'),300);
+  if(typeof confetti==='function') confetti({
+    particleCount:280, spread:100, origin:{y:.6},
+    colors:['#c9a227','#eab308','#fff','#065f46']
+  });
+  setTimeout(()=>{
+    $('milestone-icon').textContent='🎊';
+    $('milestone-title').textContent=`${count.toLocaleString('ms-MY')} ${modeName}!`;
+    $('milestone-desc').textContent=`MasyaAllah — anda telah mencapai ${count.toLocaleString('ms-MY')} ${modeName} sepanjang hidup. Semoga menjadi saham akhirat.`;
+    openSheet('sheet-milestone');
+  }, 400);
+}
+
+function boostTarget(){
+  const m=celebratedForMode||mode;
+  const d=today(); const mk=MODE_KEYS[m];
+  d[mk.t]+=100; d[mk.cel]=false;
+  closeSheet('sheet-milestone');
+  celebratedForMode=null;
+  saveState(); updateUI();
+}
+
+/* ============ NIAT ============ */
+function onNiatChange(){
+  const d=today();
+  d.niat=$('niat-input').value.trim();
+  saveState();
+}
+
+/* ============ SHEETS ============ */
+function openSheet(id){ $(id).classList.add('show') }
+function closeSheet(id){ $(id).classList.remove('show') }
+
+function openConfirm(title, desc, onOk){
+  $('confirm-title').textContent=title;
+  $('confirm-desc').textContent=desc;
+  const btn=$('confirm-ok');
+  const newBtn=btn.cloneNode(true);
+  btn.parentNode.replaceChild(newBtn,btn);
+  newBtn.addEventListener('click',()=>{
+    onOk();
+    closeSheet('sheet-confirm');
+  });
+  openSheet('sheet-confirm');
+}
+
+/* Close on overlay tap or [data-close] */
+document.addEventListener('click',e=>{
+  if(e.target.matches('.sheet-overlay[data-dismiss]')){
+    e.target.classList.remove('show');
+  }
+  if(e.target.matches('[data-close]')){
+    e.target.closest('.sheet-overlay').classList.remove('show');
+  }
+});
+/* Esc to close top-most sheet */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.querySelectorAll('.sheet-overlay.show').forEach(s=>s.classList.remove('show'));
+  }
+});
+
+/* ============ REMINDERS ============ */
+let reminderTimers=[];
+function clearReminders(){
+  reminderTimers.forEach(t=>clearTimeout(t));
+  reminderTimers=[];
+}
+
+function scheduleReminders(){
+  clearReminders();
+  if(!S.reminder.enabled || Notification.permission!=='granted') return;
+  ['pagi','petang'].forEach(k=>{
+    const [h,m]=S.reminder[k].split(':').map(Number);
+    const next=new Date();
+    next.setHours(h,m,0,0);
+    if(next<=new Date()) next.setDate(next.getDate()+1);
+    const ms=next-new Date();
+    const t=setTimeout(()=>{
+      new Notification('Waktu Zikir', {
+        body: k==='pagi' ? 'Mulakan hari dengan zikir pagi 🌅' : 'Jangan lupa zikir petang 🌆',
+        icon:'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22110%22 fill=%22%23065f46%22/><circle cx=%22256%22 cy=%22180%22 r=%2242%22 fill=%22%23c9a227%22/><circle cx=%22170%22 cy=%22260%22 r=%2230%22 fill=%22%23c9a227%22/><circle cx=%22342%22 cy=%22260%22 r=%2230%22 fill=%22%23c9a227%22/><circle cx=%22256%22 cy=%22400%22 r=%2234%22 fill=%22%23c9a227%22/></svg>',
+        badge:'data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22110%22 fill=%22%23065f46%22/><circle cx=%22256%22 cy=%22180%22 r=%2242%22 fill=%22%23c9a227%22/><circle cx=%22170%22 cy=%22260%22 r=%2230%22 fill=%22%23c9a227%22/><circle cx=%22342%22 cy=%22260%22 r=%2230%22 fill=%22%23c9a227%22/><circle cx=%22256%22 cy=%22400%22 r=%2234%22 fill=%22%23c9a227%22/></svg>',
+        tag:'zikir-'+k
+      });
+      scheduleReminders(); // reschedule utk esok
+    }, ms);
+    reminderTimers.push(t);
+  });
+  updateReminderStatus();
+}
+
+function updateReminderStatus(){
+  const st=$('rem-status');
+  if(!('Notification' in window)){
+    st.textContent='⚠️ Pelayar anda tidak menyokong notifikasi';
+  }else if(Notification.permission==='denied'){
+    st.textContent='⚠️ Notifikasi disekat. Benarkan dalam tetapan pelayar.';
+  }else if(S.reminder.enabled && Notification.permission==='granted'){
+    if(S.reminder.mode==='auto' && prayerData){
+      const p=fmtTime(new Date(prayerData.fajr.getTime()+15*60000));
+      const m=fmtTime(new Date(prayerData.maghrib.getTime()+5*60000));
+      st.textContent=`✓ Aktif · Pagi ~${p} · Petang ~${m}`;
+    } else {
+      st.textContent=`✓ Aktif · ${S.reminder.pagi} & ${S.reminder.petang}`;
+    }
+  }else{
+    st.textContent='Notifikasi: belum diaktifkan';
+  }
+}
+
+async function saveReminder(){
+  const mode=document.querySelector('.rem-mode-btn.active')?.dataset.rmode || 'auto';
+  S.reminder.mode=mode;
+  if(mode==='manual'){
+    S.reminder.pagi=$('rem-pagi').value;
+    S.reminder.petang=$('rem-petang').value;
+  }
+  if('Notification' in window && Notification.permission!=='granted'){
+    const p=await Notification.requestPermission();
+    if(p!=='granted'){
+      updateReminderStatus();
+      saveState();
+      return;
+    }
+  }
+  S.reminder.enabled=true;
+  saveState();
+  if(mode==='auto'){
+    schedulePrayerReminders();
+  } else {
+    scheduleReminders();
+  }
+  updateReminderStatus();
+  closeSheet('sheet-reminder');
+  toast('Ingatan diaktifkan ✓');
+}
+
+function disableReminder(){
+  S.reminder.enabled=false;
+  saveState();
+  clearReminders();
+  prayerReminderTimers.forEach(t=>clearTimeout(t));
+  prayerReminderTimers=[];
+  updateReminderStatus();
+  toast('Ingatan dimatikan');
+}
+
+/* ============ EXPORT ============ */
+function exportData(){
+  const data={
+    exported:new Date().toISOString(),
+    app:'zikir-selawat-v7',
+    ...S
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=`zikir-backup-${todayKey}.json`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  toast('Backup dimuat turun ✓');
+}
+
+/* ============ TOAST ============ */
+let toastTimer;
+function toast(msg){
+  let el=$('toast-el');
+  if(!el){
+    el=document.createElement('div');
+    el.id='toast-el';
+    el.style.cssText=`position:fixed;bottom:calc(var(--safe-b) + 20px);left:50%;
+      transform:translateX(-50%);background:var(--ink);color:var(--bg);
+      padding:10px 18px;border-radius:20px;font-size:.8rem;font-weight:600;
+      z-index:2000;opacity:0;transition:.3s;pointer-events:none`;
+    document.body.appendChild(el);
+  }
+  el.textContent=msg;
+  requestAnimationFrame(()=>el.style.opacity='1');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.style.opacity='0', 2200);
+}
+
+/* ============ WAKE LOCK ============ */
+let wakeLock=null;
+async function requestWakeLock(){
+  if(!('wakeLock' in navigator)) return;
+  try{
+    wakeLock=await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release',()=>{wakeLock=null});
+  }catch(e){/* ignore */}
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible' && !wakeLock) requestWakeLock();
+});
+
+/* ============ THEME ============ */
+function toggleTheme(){
+  const d=$('theme-check').checked;
+  document.body.dataset.theme=d?'dark':'light';
+  localStorage.setItem('theme', d?'dark':'light');
+}
+
+/* ============ PWA INSTALL ============ */
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  deferredInstall=e;
+  $('install-banner').classList.remove('hidden');
+});
+$('install-btn').addEventListener('click', async()=>{
+  if(!deferredInstall) return;
+  deferredInstall.prompt();
+  const {outcome}=await deferredInstall.userChoice;
+  if(outcome==='accepted') $('install-banner').classList.add('hidden');
+  deferredInstall=null;
+});
+window.addEventListener('appinstalled',()=>$('install-banner').classList.add('hidden'));
+
+/* ============ INIT ============ */
+function init(){
+  // Theme restore
+  if(localStorage.getItem('theme')==='dark'){
+    document.body.dataset.theme='dark';
+    $('theme-check').checked=true;
+  }
+
+  // Header greeting + date
+  const h=now.getHours();
+  $('greeting').textContent=h<12?'Selamat Pagi':h<16?'Selamat Tengahari':h<19?'Selamat Petang':'Selamat Malam';
+  $('date-display').textContent=now.toLocaleDateString('ms-MY',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  // Zikir for today
+  const z=ZIKIR[now.getDay()];
+  $('zikir-label').textContent=`HARI ${z.h.toUpperCase()}`;
+  $('zikir-arabic').textContent=z.t;
+  $('zikir-maksud').textContent=`"${z.m}"`;
+
+  // Reminder UI
+  $('rem-pagi').value=S.reminder.pagi;
+  $('rem-petang').value=S.reminder.petang;
+  updateReminderStatus();
+  if(S.reminder.enabled && S.reminder.mode==='manual') scheduleReminders();
+
+  // Wake lock
+  requestWakeLock();
+
+  // Event bindings
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    b.addEventListener('click',()=>switchMode(b.dataset.mode));
+  });
+  $('tap-btn').addEventListener('click',increment);
+  $('undo-btn').addEventListener('click',undoLast);
+  $('btn-reset').addEventListener('click',resetToday);
+  $('btn-set-target').addEventListener('click',openTargetSheet);
+  $('btn-save-target').addEventListener('click',saveTarget);
+  $('target-input').addEventListener('keydown',e=>{ if(e.key==='Enter') saveTarget(); });
+  $('target-input').addEventListener('input',()=>$('target-input').style.borderColor='');
+  $('btn-boost').addEventListener('click',boostTarget);
+  $('theme-check').addEventListener('change',toggleTheme);
+  $('niat-input').addEventListener('change',onNiatChange);
+  $('niat-input').addEventListener('blur',onNiatChange);
+  document.querySelectorAll('.preset').forEach(b=>{
+    b.addEventListener('click',()=>setTargetPreset(parseInt(b.dataset.preset)));
+  });
+  $('btn-reminder').addEventListener('click',()=>{
+    // Set UI state to match saved mode
+    const mode=S.reminder.mode||'auto';
+    document.querySelectorAll('.rem-mode-btn').forEach(b=>{
+      const on=b.dataset.rmode===mode;
+      b.classList.toggle('active', on);
+      b.style.background=on?'var(--card)':'transparent';
+      b.style.color=on?'var(--accent)':'var(--muted)';
+    });
+    $('rem-auto-info').classList.toggle('hidden', mode!=='auto');
+    $('rem-manual-rows').classList.toggle('hidden', mode==='auto');
+    openSheet('sheet-reminder');
+  });
+  document.querySelectorAll('.rem-mode-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('.rem-mode-btn').forEach(x=>{
+        x.classList.remove('active');
+        x.style.background='transparent';
+        x.style.color='var(--muted)';
+      });
+      b.classList.add('active');
+      b.style.background='var(--card)';
+      b.style.color='var(--accent)';
+      const mode=b.dataset.rmode;
+      $('rem-auto-info').classList.toggle('hidden', mode!=='auto');
+      $('rem-manual-rows').classList.toggle('hidden', mode==='auto');
+    });
+  });
+  $('btn-save-reminder').addEventListener('click',saveReminder);
+  $('btn-disable-reminder').addEventListener('click',disableReminder);
+  $('btn-export').addEventListener('click',exportData);
+  $('btn-about').addEventListener('click',()=>openSheet('sheet-about'));
+
+  // Prevent pull-to-refresh on tap button area
+  $('tap-btn').addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+
+  updateUI();
+
+  // Load prayer times (non-blocking)
+  loadTodayPrayers().then(p=>{
+    prayerData=p;
+    renderPrayerBanner();
+    updateReminderStatus();
+    // Re-schedule if user already enabled auto
+    if(S.reminder.enabled && S.reminder.mode==='auto') schedulePrayerReminders();
+  });
+
+  // Refresh banner every minute so countdown + window state stay fresh
+  setInterval(renderPrayerBanner, 60*1000);
+
+  // Hide splash — app is ready
+  const splash=$('splash');
+  if(splash){
+    splash.style.opacity='0';
+    setTimeout(()=>splash.remove(), 450);
+  }
+
+  // Register service worker jika tersedia (untuk offline)
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js').catch(()=>{/* ok */});
+  }
+}
+
+// Safety net: jika init crash, splash tetap tertutup selepas 5 saat
+setTimeout(()=>{
+  const sp=document.getElementById('splash');
+  if(sp){ sp.style.opacity='0'; setTimeout(()=>sp.remove(),450); }
+}, 5000);
+
+init();
 </script>
 </body>
 </html>
